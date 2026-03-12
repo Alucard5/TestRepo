@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CTC Calculator</title>
+<style>
+body{font-family:Arial;margin:40px;background:#f5f5f5}
+table{border-collapse:collapse;background:white}
+td,th{border:1px solid #ccc;padding:8px 12px;text-align:right}
+td:first-child,th:first-child{text-align:left}
+input{width:140px}
+.result{background:#eef}
+.note{margin-top:15px;font-weight:bold}
+</style>
+</head>
+<body>
+
+<h2>CTC Calculator</h2>
+<p>Only edit the two input fields.</p>
+
+<table>
+<tr><td>Total CTC</td><td><input id="ctc" value="1000000"></td></tr>
+<tr><td>Prinpay</td><td><input id="prinpay" value="0.1"></td></tr>
+</table>
+
+<br>
+
+<table>
+<tr><th>Component</th><th>New</th><th>Old</th><th>% Change</th></tr>
+
+<tr><td>Total CTC</td><td class="result" id="H8"></td><td class="result" id="H18"></td><td id="I8"></td></tr>
+<tr><td>Fixed Salary</td><td class="result" id="H9"></td><td class="result" id="H19"></td><td id="I9"></td></tr>
+<tr><td>Basic</td><td class="result" id="H10"></td><td class="result" id="H20"></td><td id="I10"></td></tr>
+<tr><td>HRA</td><td class="result" id="H11"></td><td class="result" id="H21"></td><td id="I11"></td></tr>
+<tr><td>Employer PF</td><td class="result" id="H12"></td><td class="result" id="H22"></td><td id="I12"></td></tr>
+<tr><td>Gratuity</td><td class="result" id="H13"></td><td class="result" id="H23"></td><td id="I13"></td></tr>
+<tr><td>Taxable</td><td class="result" id="H14"></td><td class="result" id="H24"></td><td id="I14"></td></tr>
+<tr><td>Variable</td><td class="result" id="H15"></td><td class="result" id="H25"></td><td id="I15"></td></tr>
+
+</table>
+
+<div class="note">Note: Total CTC remains the same in both calculations.</div>
+
+<script>
+
+function pct(newv, oldv){
+if(oldv==0) return "Infinite";
+return ((newv/oldv-1)*100).toFixed(2)+"%";
+}
+
+function calc(){
+
+let H8 = parseFloat(document.getElementById("ctc").value);
+let D3 = parseFloat(document.getElementById("prinpay").value);
+
+let H10 = H8/2.0481;
+let H11 = 0.4*H10;
+let H12 = 0.12*H10;
+let H13 = 0.0481*H10;
+
+let H14 = (H8-H13-((1+D3)*(H12+H11+H10)))/(1+D3);
+if(H14<0) H14=0;
+
+let H9 = H10+H11+H12+H13+H14;
+let H15 = H8-H9;
+
+let H18 = H8;
+let H19 = H18/(1+D3);
+let H20 = H18/2;
+let H21 = 0.4*H20;
+let H22 = 0.12*H20;
+let H23 = 0.0481*H20;
+
+let H24 = H19-(H20+H21+H22+H23);
+if(H24<0) H24=0;
+
+let H25;
+if((H19-(H20+H21+H22+H23))<0)
+H25 = H18-H19+(H19-(H20+H21+H22+H23));
+else
+H25 = H18-H19;
+
+let values = {H8,H9,H10,H11,H12,H13,H14,H15,H18,H19,H20,H21,H22,H23,H24,H25};
+
+for(let k in values){
+document.getElementById(k).innerText = Math.round(values[k]);
+}
+
+document.getElementById("I8").innerText = pct(H8,H18);
+document.getElementById("I9").innerText = pct(H9,H19);
+document.getElementById("I10").innerText = pct(H10,H20);
+document.getElementById("I11").innerText = pct(H11,H21);
+document.getElementById("I12").innerText = pct(H12,H22);
+document.getElementById("I13").innerText = pct(H13,H23);
+document.getElementById("I14").innerText = pct(H14,H24);
+document.getElementById("I15").innerText = pct(H15,H25);
+
+}
+
+document.getElementById("ctc").addEventListener("input",calc);
+document.getElementById("prinpay").addEventListener("input",calc);
+
+calc();
+
+</script>
+
+</body>
+</html>
